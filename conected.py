@@ -1,3 +1,4 @@
+#from typing import ItemView
 import requests
 from bs4 import BeautifulSoup
 
@@ -49,7 +50,7 @@ def viewItem(dictMaterials):
         nameItem= None
         cantPerCraft= None
         durationPerCraft= None
-        dictNecessaryMaterias= None
+        dictNecessaryMaterias= {}
 
 
     
@@ -58,15 +59,15 @@ def viewItem(dictMaterials):
     soup= BeautifulSoup(response.text,"lxml")
 
     footer= soup.find("div", {"class":"tt_recipe"})
-
-    for cell in footer.find_all("div"):
-
-        try:
-            print("cell.text: ",cell.text)
-            test=cell.find("div").text
-            print("test: ",test)
-        except :
-            continue
+    itemView= Item()
+    for cell in footer.children:
+        if (cell["class"][0]=="tt_output_item"):
+            itemView.nameItem=cell.a.get("title")
+            itemView.cantPerCraft=cell.text
+        elif (cell["class"][0]=="tt_rec_arrow"):
+            itemView.durationPerCraft= cell.text
+        elif (cell["class"][0]=="tt_recipe_item"):
+            itemView.dictNecessaryMaterias[cell.a.get("title")]= cell.text
     
     
             
